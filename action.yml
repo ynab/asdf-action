@@ -1,0 +1,32 @@
+name: Install asdf
+description: Installs and configures asdf versions >= 0.16.0
+inputs:
+  version:
+    description: "The asdf version to install.  This version must be >= 0.16.0."
+    default: 0.16.2
+branding:
+  icon: 'radio'
+  color: 'green'
+runs:
+  using: "composite"
+  steps:
+    - uses: ynab/system-info-action@v1.3
+      id: system-info
+    - name: Download and configure asdf
+      shell: bash
+      run: |
+        if [[ "${{ steps.system-info.outputs.platform }}" == "darwin" && "${{ steps.system-info.outputs.cpu-model }}" == *"M1"* ]]; then
+          ASDF_TARBALL_FILENAME="asdf-v${{ inputs.version }}-darwin-arm64.tar.gz"          
+        elif [[ "${{ steps.system-info.outputs.platform }}" == "linux" && "${{ steps.system-info.outputs.cpu-model }}" == *"AMD"* ]]; then
+          ASDF_TARBALL_FILENAME="asdf-v${{ inputs.version }}-linux-amd64.tar.gz"          
+        else
+          echo "Error: unsupported platform or CPU: ${{ steps.system-info.outputs.platform }} with CPU ${{ steps.system-info.outputs.cpu-model }}"
+          exit 1
+        fi
+        
+        wget "https://github.com/asdf-vm/asdf/releases/download/v${{ inputs.version }}/${ASDF_TARBALL_FILENAME}" -O /tmp/asdf.tar.gz
+        mkdir -p "$HOME/asdf"; mkdir -p "$HOME/.asdf";
+        tar -zxvf /tmp/asdf.tar.gz -C "$HOME/asdf"
+        echo "$HOME/asdf" >> "$GITHUB_PATH"
+        echo "$HOME/.asdf/shims" >> "$GITHUB_PATH"
+      
