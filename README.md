@@ -10,7 +10,7 @@ This action supports Linux (AMD) and macOS (ARM) runners.
 
 ```yaml
 - name: Install asdf
-  uses: ynab/asdf-action@v1
+  uses: ynab/asdf-action@v1.1
   with:
     version: 0.16.2
 - name: Checkout code which includes a .tool-versions file in root
