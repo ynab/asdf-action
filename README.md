@@ -2,7 +2,7 @@
 
 GitHub Action that installs and configures [asdf](https://asdf-vm.com/) version >= 0.16.
 
-Only the asdf binary is installed and you will need to install any needed asdf plugins separately and then run `asdf install` to actually install all your runtimes defined in your `.tool-versions` file.
+Only the asdf binary is installed. You will need to install any needed asdf plugins and then run `asdf install` to actually install all your runtimes defined in your `.tool-versions` file.
 
 This action supports Linux (AMD) and macOS (ARM) runners.
 
