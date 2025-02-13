@@ -17,7 +17,7 @@ runs:
       run: |
         if [[ "${{ steps.system-info.outputs.platform }}" == "darwin" && "${{ steps.system-info.outputs.cpu-model }}" == *"M1"* ]]; then
           ASDF_TARBALL_FILENAME="asdf-v${{ inputs.version }}-darwin-arm64.tar.gz"          
-        elif [[ "${{ steps.system-info.outputs.platform }}" == "linux" && "${{ steps.system-info.outputs.cpu-model }}" == *"AMD"* ]]; then
+        elif [[ "${{ steps.system-info.outputs.platform }}" == "linux" && ("${{ steps.system-info.outputs.cpu-model }}" == *"AMD"* || "${{ steps.system-info.outputs.cpu-model }}" == *"Intel"*) ]]; then
           ASDF_TARBALL_FILENAME="asdf-v${{ inputs.version }}-linux-amd64.tar.gz"          
         else
           echo "Error: unsupported platform or CPU: ${{ steps.system-info.outputs.platform }} with CPU ${{ steps.system-info.outputs.cpu-model }}"
@@ -29,4 +29,3 @@ runs:
         tar -zxvf /tmp/asdf.tar.gz -C "$HOME/asdf"
         echo "$HOME/asdf" >> "$GITHUB_PATH"
         echo "$HOME/.asdf/shims" >> "$GITHUB_PATH"
-      
