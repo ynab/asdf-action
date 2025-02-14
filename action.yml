@@ -12,7 +12,8 @@ runs:
   steps:
     - uses: ynab/system-info-action@v1.3
       id: system-info
-    - name: Check system compatibility      
+    - name: Check system compatibility   
+      shell: bash   
       run: |
         if [[ "${{ steps.system-info.outputs.platform }}" == "darwin" && "${{ steps.system-info.outputs.cpu-model }}" == *"M1"* ]]; then
           echo "Platform: macOS with Apple Silicon"
