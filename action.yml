@@ -12,20 +12,39 @@ runs:
   steps:
     - uses: ynab/system-info-action@v1.3
       id: system-info
-    - name: Download and configure asdf
-      shell: bash
+    - name: Check system compatibility      
       run: |
         if [[ "${{ steps.system-info.outputs.platform }}" == "darwin" && "${{ steps.system-info.outputs.cpu-model }}" == *"M1"* ]]; then
-          ASDF_TARBALL_FILENAME="asdf-v${{ inputs.version }}-darwin-arm64.tar.gz"          
+          echo "Platform: macOS with Apple Silicon"
         elif [[ "${{ steps.system-info.outputs.platform }}" == "linux" && ("${{ steps.system-info.outputs.cpu-model }}" == *"AMD"* || "${{ steps.system-info.outputs.cpu-model }}" == *"Intel"*) ]]; then
-          ASDF_TARBALL_FILENAME="asdf-v${{ inputs.version }}-linux-amd64.tar.gz"          
+          echo "Platform: Linux with AMD or Intel CPU"
         else
           echo "Error: unsupported platform or CPU: ${{ steps.system-info.outputs.platform }} with CPU ${{ steps.system-info.outputs.cpu-model }}"
           exit 1
         fi
+    - name: Restore cache      
+      id: restore-cache
+      uses: actions/cache@v4
+      with:
+        path: ~/asdf
+        key: ${{ runner.os }}-asdf
+    - name: Download and configure asdf
+      if: ${{ steps.restore-cache.outputs.cache-hit != 'true' }}
+      shell: bash
+      run: |
+        if [[ "${{ steps.system-info.outputs.platform }}" == "darwin" ]]; then
+          ASDF_TARBALL_FILENAME="asdf-v${{ inputs.version }}-darwin-arm64.tar.gz"
+        elif [[ "${{ steps.system-info.outputs.platform }}" == "linux" ]]; then
+          ASDF_TARBALL_FILENAME="asdf-v${{ inputs.version }}-linux-amd64.tar.gz"      
+        fi
         
         wget "https://github.com/asdf-vm/asdf/releases/download/v${{ inputs.version }}/${ASDF_TARBALL_FILENAME}" -O /tmp/asdf.tar.gz
-        mkdir -p "$HOME/asdf"; mkdir -p "$HOME/.asdf";
-        tar -zxvf /tmp/asdf.tar.gz -C "$HOME/asdf"
-        echo "$HOME/asdf" >> "$GITHUB_PATH"
+        mkdir -p "$HOME/asdf"
+        tar -zxvf /tmp/asdf.tar.gz -C "$HOME/asdf"        
+    - name: Configure asdf      
+      shell: bash
+      run: |
+        mkdir -p "$HOME/.asdf"
         echo "$HOME/.asdf/shims" >> "$GITHUB_PATH"
+        echo "$HOME/asdf" >> "$GITHUB_PATH"
+        
