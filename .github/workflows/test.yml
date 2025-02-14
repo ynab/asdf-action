@@ -1,0 +1,20 @@
+name: Test
+on:
+    pull_request:
+      types: [opened, reopened, synchronize]
+    push:
+      branches: [ main ]
+      tags-ignore: "**"
+    workflow_dispatch:
+jobs:
+  test:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install and configure asdf
+        uses: ./
+      - name: Run asdf
+        run: asdf --version
