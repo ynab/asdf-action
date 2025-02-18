@@ -1,6 +1,6 @@
 # asdf GitHub Action
 
-GitHub Action that installs and configures [asdf](https://asdf-vm.com/) version >= 0.16.
+GitHub Action that installs and configures [asdf](https://asdf-vm.com/) version >= 0.16.  Cache is used when possible to speed up the install.
 
 Only the asdf binary is installed. You will need to install any needed asdf plugins and then run `asdf install` to actually install all your runtimes defined in your `.tool-versions` file.
 
